@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  mysqldb:
+    container_name: mysql
+    image: mysql:5.7
+    restart: always
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=development
+    volumes:
+      - ./.dockerdb:/var/lib/mysql
+  apache:
+    build:
+      context: .
+      dockerfile: php7.2-dockerfile
+    image: 'php:7.2-apache'
+    container_name: php
+    restart: always
+    ports:
+      - '80:80'
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysqldb
+    links:
+      - mysqldb
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+     - PMA_ARBITRARY=1
+    restart: always
+    ports:
+     - 8080:80
+    volumes:
+     - /sessions
