@@ -12,6 +12,16 @@ services:
       - MYSQL_DATABASE=development
     volumes:
       - ./.dockerdb:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+     - PMA_ARBITRARY=1
+    restart: always
+    ports:
+     - 8080:80
+    volumes:
+     - /sessions
   apache:
     build:
       context: .
@@ -27,13 +37,10 @@ services:
       - mysqldb
     links:
       - mysqldb
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    environment:
-     - PMA_ARBITRARY=1
-    restart: always
-    ports:
-     - 8080:80
+  cloud9:
+    image: sapk/cloud9
     volumes:
-     - /sessions
+      - .:/workspace
+    ports:
+      - 8181:8181
+    command: --auth root:root
